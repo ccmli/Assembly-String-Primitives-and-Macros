@@ -1,10 +1,5 @@
-TITLE Project 6 - String Primitives and Macros     (Proj6_chanc5.asm)
+TITLE String Primitives and Macros     (String_Primitives_and_Macros.asm)
 
-; Author: Chungman Chan
-; Last Modified: 
-; OSU email address: chanc5@oregonstate.edu
-; Course number/section:   CS271 Section 400
-; Project Number: 6                Due Date: 08/18/2023
 ; Description: This program implements string processing macros and procedures to 
 ;              handle user input and display, as well as conversion of ASCII strings 
 ;              to numeric values and vice versa. It includes macros "mGetString" to 
