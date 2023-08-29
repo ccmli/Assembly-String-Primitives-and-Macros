@@ -19,7 +19,7 @@ TITLE Project 6 - String Primitives and Macros     (Proj6_chanc5.asm)
 
 INCLUDE Irvine32.inc
 
-; (insert macro definitions here)
+; Macro definitions
 
 ; ---------------------------------------------------------------------------------
 ; Name: mGetString
@@ -44,14 +44,14 @@ mGetString	MACRO promptAddr:REQ, inputAddr:REQ, maxLen:REQ, charEnter:REQ
 	PUSH	EAX
 
 	mDisplayString	promptAddr
-	MOV		EDX, inputAddr
-	MOV		ECX, maxLen
+	MOV	EDX, inputAddr
+	MOV	ECX, maxLen
 	CALL	ReadString
-	MOV		charEnter, EAX			; Store the number of characters entered
+	MOV	charEnter, EAX			; Store the number of characters entered
 
-	POP		EAX
-	POP		ECX
-	POP		EDX
+	POP	EAX
+	POP	ECX
+	POP	EDX
 ENDM
 
 ; ---------------------------------------------------------------------------------
@@ -67,21 +67,20 @@ ENDM
 ; -----------------------------------------
 mDisplayString	MACRO strAddr:REQ
 	PUSH	EDX
-	MOV		EDX, strAddr
+	MOV	EDX, strAddr
 	CALL	WriteString
-	POP		EDX
+	POP	EDX
 ENDM
 
-; (insert constant definitions here)
+; Constant
 MAX_INPUT_LEN = 12
 MAX_INPUT = 10
 
 .data
-; (insert variable definitions here)
 intro_1			BYTE	"Project 6: Designing low-level I/O procedures by Chungman Chan",10,0
 intro_2			BYTE	"Please enter 10 signed decimal integers, ensuring that each number is within the range of a 32-bit register. ",10,0
 intro_3			BYTE	"Once you've entered the numbers, the program will generate a list showing the integers, their total sum, and their average value.",10,0
-extraCred		BYTE	"**EC1: Number each line of user input and display a running subtotal of the user’s valid numbers. These displays must use WriteVal. (1 pt)",10,0
+extraCred		BYTE	"**EC1: Number each line of user input and display a running subtotal of the userâ€™s valid numbers. These displays must use WriteVal. (1 pt)",10,0
 prompt			BYTE	"Please enter an signed number: ",0
 retry			BYTE	"Please try again: ",0
 error			BYTE	"ERROR: The input is invalid or the number is too large! ",10,0
@@ -105,9 +104,6 @@ minNeg32		BYTE	"-2147483648",0
 
 .code
 main PROC
-
-; (insert executable instructions here)
-	
 	; introduction
 	PUSH	OFFSET extraCred
 	PUSH	OFFSET intro_1
@@ -140,12 +136,12 @@ main PROC
 	PUSH	ECX
 	PUSH	MAX_INPUT
 	CALL	addList
-	INC		EBX
+	INC	EBX
 
 	; calculate the running total
-	MOV		EAX, runningTotal
-	ADD		EAX, inputNum
-	MOV		runningTotal, EAX
+	MOV	EAX, runningTotal
+	ADD	EAX, inputNum
+	MOV	runningTotal, EAX
 	
 	; display the running total
 	mDisplayString	OFFSET totalPrompt
@@ -155,8 +151,8 @@ main PROC
 	CALL	WriteVal
 	CALL	CrLf
 
-	DEC		ECX
-	JNZ		_GetVal
+	DEC	ECX
+	JNZ	_GetVal
 
 	; after gathering 10 inputs, print the array
 	PUSH	OFFSET minNeg32
@@ -182,7 +178,7 @@ main PROC
 	Invoke ExitProcess,0	; exit to operating system
 main ENDP
 
-; (insert additional procedures here)
+; Additional Procedures
 
 ; ---------------------------------------------------------------------------------
 ; Name: Introduction
@@ -234,103 +230,103 @@ Introduction ENDP
 ; ---------------------------------------------------------------------------------
 ReadVal	PROC
 	PUSH	EBP
-	MOV		EBP, ESP
+	MOV	EBP, ESP
 	PUSHAD
 	
-	MOV		EAX, [EBP+28]
-	XOR		EAX, EAX
+	MOV	EAX, [EBP+28]
+	XOR	EAX, EAX
 	mGetString [EBP+16], [EBP+28], [EBP+20], [EBP+32] 	; get the number input, [EBP+28] will be changed after mGetString
-	JZ		_InvalidNum
-	MOV		EAX, [EBP+32]
-	CMP		EAX, 11
-	JG		_InvalidNum
+	JZ	_InvalidNum
+	MOV	EAX, [EBP+32]
+	CMP	EAX, 11
+	JG	_InvalidNum
 
 	_GetNewNum:
-	MOV		EBX, 1						; store the sign into EBX, 1 = positve, -1 = negative
-	XOR		EAX, EAX
-	XOR		EDX, EDX
+	MOV	EBX, 1						; store the sign into EBX, 1 = positve, -1 = negative
+	XOR	EAX, EAX
+	XOR	EDX, EDX
 
-	MOV		ESI, [EBP+28]				; save string in ESI
-	MOV		ECX, 0
+	MOV	ESI, [EBP+28]					; save string in ESI
+	MOV	ECX, 0
 
 	_GetNum:
 	LODSB
-	CMP		AL, 0						; check if current character is null
-	JE		_EndLoop					; yes: terminate the loop
+	CMP	AL, 0						; check if current character is null
+	JE	_EndLoop					; yes: terminate the loop
 
-	CMP		ECX, [EBP+20]
-	JGE		_InvalidNum
-	CMP		ECX, 0						; check if ECX is 0 (1st character)
-	JE		_FirstDigit					; yes: jump to check sign/ no sign
-	JMP		_CheckValid	
+	CMP	ECX, [EBP+20]
+	JGE	_InvalidNum
+	CMP	ECX, 0						; check if ECX is 0 (1st character)
+	JE	_FirstDigit					; yes: jump to check sign/ no sign
+	JMP	_CheckValid	
 
 	_FirstDigit:
-	CMP		AL, 43						; check if first digit is positive sign
-	JE		_MoveToNext
-	CMP		AL, 45						; check if first digit is negative sign
-	JE		_SetSign
-	JMP		_CheckValid
+	CMP	AL, 43						; check if first digit is positive sign
+	JE	_MoveToNext
+	CMP	AL, 45						; check if first digit is negative sign
+	JE	_SetSign
+	JMP	_CheckValid
 
 	_SetSign:
-	MOV		EBX, -1
-	JMP		_MoveToNext
+	MOV	EBX, -1
+	JMP	_MoveToNext
 
 	_CheckValid:
-	CMP		AL, 48						; check if the character is smaller than '0'
-	JL		_InvalidNum				
+	CMP	AL, 48						; check if the character is smaller than '0'
+	JL	_InvalidNum				
 	CMP 	AL, 57						; check if the character is larger than '9'
-	JG		_InvalidNum
+	JG	_InvalidNum
 
 	_ConvertToNum:
 	; EDX = EAX * 10 + ECX
 	PUSH	ECX
-	SUB		AL, 48					
+	SUB	AL, 48					
 	MOVZX	ECX, AL
-	MOV		EAX, EDX
-	XOR		EDX, EDX					; clear EDX
+	MOV	EAX, EDX
+	XOR	EDX, EDX					; clear EDX
 
 	IMUL	EAX, 10
-	JO		_LargerThan32			
-	ADD		EAX, ECX
-	JO		_LargerThan32
-	MOV		EDX, EAX					; current number will be save in EDX
-	POP		ECX	
-	JMP		_MoveToNext
+	JO	_LargerThan32			
+	ADD	EAX, ECX
+	JO	_LargerThan32
+	MOV	EDX, EAX					; current number will be save in EDX
+	POP	ECX	
+	JMP	_MoveToNext
 
 	_MoveToNext:
-	ADD		ECX, 1
-	JMP		_GetNum
+	ADD	ECX, 1
+	JMP	_GetNum
 
 	_LargerThan32:
-	POP		ECX
-	MOV		EDX, EAX
-	CMP		EDX, 80000000h				; check if EDX is currently 80000000h
-	JNE		_InvalidNum					; no: invalid number
-	CMP		EBX, -1						; check if sign is negative
-	JNE		_InvalidNum					; no: invalid number
-	JMP		_EndLoopFromNeg32			; yes: jump to display the negative num result for -(2^31)
+	POP	ECX
+	MOV	EDX, EAX
+	CMP	EDX, 80000000h					; check if EDX is currently 80000000h
+	JNE	_InvalidNum					; no: invalid number
+	CMP	EBX, -1						; check if sign is negative
+	JNE	_InvalidNum					; no: invalid number
+	JMP	_EndLoopFromNeg32				; yes: jump to display the negative num result for -(2^31)
 
 	_InvalidNum:
 	mDisplayString [EBP+12]
-	MOV		EAX, [EBP+28]
-	XOR		EAX, EAX					; clear the value in the string
+	MOV	EAX, [EBP+28]
+	XOR	EAX, EAX					; clear the value in the string
 	mGetString [EBP+8], [EBP+28], [EBP+20], [EBP+32]
-	JZ		_InvalidNum
-	MOV		EAX, [EBP+32]
-	CMP		EAX, 10
-	JG		_InvalidNum
-	JMP		_GetNewNum
+	JZ	_InvalidNum
+	MOV	EAX, [EBP+32]
+	CMP	EAX, 10
+	JG	_InvalidNum
+	JMP	_GetNewNum
 
 	_EndLoop:
 	IMUL	EDX, EBX
 
 	_EndLoopFromNeg32:
-	MOV		EAX, EDX
-	MOV		ESI, [EBP+24]
-	MOV		[ESI], EAX
+	MOV	EAX, EDX
+	MOV	ESI, [EBP+24]
+	MOV	[ESI], EAX
 	POPAD
-	POP		EBP
-	RET		28
+	POP	EBP
+	RET	28
 
 ReadVal	ENDP
 
@@ -356,22 +352,22 @@ ReadVal	ENDP
 ; ---------------------------------------------------------------------------------
 addList	PROC
 	PUSH	EBP
-	MOV		EBP, ESP
+	MOV	EBP, ESP
 	PUSHAD
 
-	MOV		EAX, [EBP+8]			; maximum number of input into EAX
-	MOV		EBX, [EBP+12]			; counter
-	SUB		EAX, EBX				; max - counter = index of the number should be in
-	IMUL	EAX, 4					; calculate the address of each index
+	MOV	EAX, [EBP+8]					; maximum number of input into EAX
+	MOV	EBX, [EBP+12]					; counter
+	SUB	EAX, EBX					; max - counter = index of the number should be in
+	IMUL	EAX, 4						; calculate the address of each index
 
-	MOV		ESI, [EBP+16]
-	ADD		ESI, EAX
-	MOV		EAX, [EBP+20]
-	MOV		[ESI], EAX
+	MOV	ESI, [EBP+16]
+	ADD	ESI, EAX
+	MOV	EAX, [EBP+20]
+	MOV	[ESI], EAX
 
 	POPAD
-	POP		EBP
-	RET		16
+	POP	EBP
+	RET	16
 
 
 addList ENDP
@@ -397,75 +393,75 @@ addList ENDP
 
 WriteVal PROC
 	PUSH	EBP
-	MOV		EBP, ESP
+	MOV	EBP, ESP
 	PUSHAD
 
 	PUSH	EAX
 	PUSH	ECX
-	MOV		EDI, [EBP+8]
-	MOV		ECX, 12
-	MOV		AL, 0
+	MOV	EDI, [EBP+8]
+	MOV	ECX, 12
+	MOV	AL, 0
 
 	; Loop to fill buffer with zeros
 	_FillWithZeros:
 		STOSB
 		LOOP	_FillWithZeros
-	POP		ECX
-	POP		EAX
+	POP	ECX
+	POP	EAX
 
-	MOV		ECX, 0					; Initialize ECX to store the number of digits
-	MOV		EAX, [EBP+12]			; Load the value of the number to be converted
-	MOV		EDI, [EBP+8]			; Load the address of the output string buffer
-	TEST	EAX, EAX				; check if the input number is negative
-	JS		_IsNegative
-	JMP		_PrepToConvert
+	MOV	ECX, 0						; Initialize ECX to store the number of digits
+	MOV	EAX, [EBP+12]					; Load the value of the number to be converted
+	MOV	EDI, [EBP+8]					; Load the address of the output string buffer
+	TEST	EAX, EAX					; check if the input number is negative
+	JS	_IsNegative
+	JMP	_PrepToConvert
 
 	_IsNegative:
-	CMP		EAX, 80000000h			; Check if the value is -2147483648
-	JE		_PrintNeg32
+	CMP	EAX, 80000000h					; Check if the value is -2147483648
+	JE	_PrintNeg32
 
 	PUSH	EAX
-	XOR		EAX, EAX
-	MOV		AL, 45
-	MOV		[EDI], AL
-	INC		EDI
-	POP		EAX
-	NEG		EAX						; Convert the negative value to positive
-	JMP		_PrepToConvert
+	XOR	EAX, EAX
+	MOV	AL, 45
+	MOV	[EDI], AL
+	INC	EDI
+	POP	EAX
+	NEG	EAX						; Convert the negative value to positive
+	JMP	_PrepToConvert
 
 	_PrintNeg32:
-	MOV		EDX, [EBP+16]			; Load the address of the string for -2147483648
+	MOV	EDX, [EBP+16]					; Load the address of the string for -2147483648
 	mDisplayString EDX
-	JMP		_EndLoop
+	JMP	_EndLoop
 
 	_PrepToConvert:
-	MOV		EBX, 10					; EBX used as divisor
-	XOR		EDX, EDX
+	MOV	EBX, 10						; EBX used as divisor
+	XOR	EDX, EDX
 
 	_ConvertToStr:
 	CDQ
 	IDIV	EBX
 	PUSH	EDX						; Push the remainder onto the stack
-	INC		ECX
-	CMP		EAX, 0					; Check if quotient is zero
-	JE		_PutIntoString
-	JMP		_ConvertToStr
+	INC	ECX
+	CMP	EAX, 0						; Check if quotient is zero
+	JE	_PutIntoString
+	JMP	_ConvertToStr
 
 
 	_PutIntoString:
-	XOR		EAX, EAX
-	POP		EAX
-	ADD		AL, 48					; Convert remainder to ASCII character
+	XOR	EAX, EAX
+	POP	EAX
+	ADD	AL, 48						; Convert remainder to ASCII character
 	STOSB
 	LOOP	_PutIntoString
 
 	_PrintString:
-	mDisplayString [EBP+8]			; Display the converted string
+	mDisplayString [EBP+8]					; Display the converted string
 
 	_EndLoop:
 	POPAD
-	POP		EBP
-	RET		12
+	POP	EBP
+	RET	12
 WriteVal ENDP
 
 ; ---------------------------------------------------------------------------------
@@ -490,16 +486,16 @@ WriteVal ENDP
 ; ---------------------------------------------------------------------------------
 DisplayNumArray PROC
 	PUSH	EBP
-	MOV		EBP, ESP
+	MOV	EBP, ESP
 	PUSHAD
 
 	mDisplayString [EBP+12]
 	CALL	CrLf
 
-	MOV		ESI, [EBP+8]			; Load the address of the number array
-	MOV		ECX, [EBP+16]			; Load the length of the number array
-	DEC		ECX
-	MOV		EBX, 0
+	MOV	ESI, [EBP+8]					; Load the address of the number array
+	MOV	ECX, [EBP+16]					; Load the length of the number array
+	DEC	ECX
+	MOV	EBX, 0
 	_PrintArray:
 	LODSD							; Load the next SDWORD from the array
 
@@ -519,8 +515,8 @@ DisplayNumArray PROC
 	CALL	WriteVal
 
 	POPAD
-	POP		EBP
-	RET		24
+	POP	EBP
+	RET	24
 DisplayNumArray ENDP
 
 ; ---------------------------------------------------------------------------------
@@ -546,16 +542,16 @@ DisplayNumArray ENDP
 ; ---------------------------------------------------------------------------------
 CalculationResult	PROC
 	PUSH	EBP
-	MOV		EBP, ESP
+	MOV	EBP, ESP
 	PUSHAD
 	
-	MOV		EAX, 0
-	MOV		ESI, [EBP+8]			; put address of the number array into ESI
-	MOV		ECX, [EBP+12]			; set ECX as counter
+	MOV	EAX, 0
+	MOV	ESI, [EBP+8]					; put address of the number array into ESI
+	MOV	ECX, [EBP+12]					; set ECX as counter
 
 	_AddSum:
-	ADD		EAX, [ESI]
-	ADD		ESI, 4
+	ADD	EAX, [ESI]
+	ADD	ESI, 4
 	LOOP	_AddSum
 	
 	CALL	CrLf
@@ -568,7 +564,7 @@ CalculationResult	PROC
 	CALL	WriteVal				
 
 	; Calculate the average
-	MOV		EBX, [EBP+12]
+	MOV	EBX, [EBP+12]
 	CDQ
 	IDIV	EBX
 
@@ -583,8 +579,8 @@ CalculationResult	PROC
 	CALL	CrLf
 
 	POPAD
-	POP		EBP
-	RET		24
+	POP	EBP
+	RET	24
 CalculationResult ENDP
 
 
