@@ -40,13 +40,6 @@ Displays a null-terminated string to the console.
 - `DisplayNumArray`: Display an array of signed integers separated by commas.
 - `CalculationResult`: Calculate the sum and average of an array of signed integers and display the results.
 
-## How to Run
-
-1. Assemble and link the program using the Irvine32 library.
-2. Execute the compiled program.
-3. Follow the on-screen prompts to enter 10 valid signed decimal integers.
-4. The program will display the entered numbers, their sum, and truncated average.
-
 ## Notes
 
 - Ensure that each entered number is within the range of a 32-bit register.
